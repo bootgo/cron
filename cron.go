@@ -102,6 +102,10 @@ func (c *Cron) AddJob(spec string, cmd Job) error {
 	return nil
 }
 
+func (c *Cron) Running() bool {
+	return c.running
+}
+
 func (c *Cron) RemoveJob(cb RemoveCheckFunc) {
 	c.remove <- cb
 }
