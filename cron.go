@@ -7,9 +7,6 @@ import (
 	"time"
 )
 
-// 删除job的检查函数，返回true则删除
-type RemoveCheckFunc func(e *Entry) bool
-
 // Cron keeps track of any number of entries, invoking the associated func as
 // specified by the schedule. It may be started, stopped, and the entries may
 // be inspected while running.
@@ -158,22 +155,6 @@ func (c *Cron) AddJob(spec string, cmd Job) (EntryID, error) {
 
 func (c *Cron) Running() bool {
 	return c.running
-}
-
-func (c *Cron) RemoveJob(cb RemoveCheckFunc) {
-
-	if !c.running {
-		var newEntries []*Entry
-		for _, e := range c.entries {
-			if !cb(e) {
-				newEntries = append(newEntries, e)
-			}
-		}
-		c.entries = newEntries
-		return
-	}
-
-	c.remove <- cb
 }
 
 // Schedule adds a Job to the Cron to be run on the given schedule.
