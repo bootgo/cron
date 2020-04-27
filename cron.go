@@ -16,6 +16,7 @@ type Cron struct {
 	stop      chan struct{}
 	add       chan *Entry
 	remove    chan EntryID
+	removeJob chan RemoveCheckFunc
 	snapshot  chan chan []Entry
 	running   bool
 	logger    Logger
@@ -301,6 +302,11 @@ func (c *Cron) run() {
 				now = c.now()
 				c.removeEntry(id)
 				c.logger.Info("removed", "entry", id)
+
+			case cb := <-c.removeJob:
+				timer.Stop()
+				now = c.now()
+				c.removeEntryByJob(cb)
 			}
 
 			break
